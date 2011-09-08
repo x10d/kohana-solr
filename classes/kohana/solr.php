@@ -86,7 +86,7 @@ class Kohana_Solr {
 	 */
 	public static function escape($value)
 	{
-		// @link http://lucene.apache.org/java/docs/queryparsersyntax.html#Escaping%20Special%20Characters
+		// @link http://lucene.apache.org/java/2_4_0/queryparsersyntax.html#Escaping%20Special%20Characters
 		$pattern = '#(\+|-|&&|\|\||!|\(|\)|\{|}|\[|]|\^|"|~|\*|\?|:|\\\)#';
 		$replace = '\\\$1';
 
