@@ -71,7 +71,8 @@ class Kohana_Solr {
 	public static function build_query($params)
 	{
 		// remove brackets from url encoded arrays
-		return preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($params, NULL, '&'));
+		// and replace all spaces (+) with %20
+		return str_replace('+', '%20', preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($params, NULL, '&')));
 	}
 
 	/**
