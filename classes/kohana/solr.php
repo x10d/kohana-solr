@@ -152,6 +152,13 @@ class Kohana_Solr {
 	{
 		$this->instance = $name;
 
+		$config = $config + array(
+			'host' => 'localhost',
+			'port' => 8983,
+			'path' => '/solr/',
+			'unique_key' => 'id',
+		);
+
 		$base = 'http://'.$config['host'].':'.$config['port'].$config['path'];
 		$config['update_url'] = $base.Solr::UPDATE_SERVLET;
 		$config['search_url'] = $base.Solr::SEARCH_SERVLET;
@@ -376,5 +383,13 @@ class Kohana_Solr {
 		$url = $this->config['search_url'].'?'.Solr::build_query($params);
 
 		return json_decode(Remote::get($url, $this->curl_options), TRUE);
+	}
+
+	/**
+	 * @param $var
+	 * @return mixed
+	 */
+	public function __get($var) {
+		return Arr::get($this->config, $var);
 	}
 }
