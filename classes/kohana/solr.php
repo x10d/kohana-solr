@@ -137,7 +137,7 @@ class Kohana_Solr {
 	/**
 	 * @var array
 	 */
-	public $curl_options;
+	public $curl_options = array();
 
 	/**
 	 * @var array
