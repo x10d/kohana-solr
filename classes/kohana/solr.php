@@ -160,9 +160,7 @@ class Kohana_Solr {
 			'unique_key' => 'id',
 		);
 
-		$base = 'http://'.$config['host'].':'.$config['port'].$config['path'];
-		$config['update_url'] = $base.Solr::UPDATE_SERVLET;
-		$config['search_url'] = $base.Solr::SEARCH_SERVLET;
+		$config['api_url'] = 'http://'.$config['host'].':'.$config['port'].$config['path'];
 
 		$this->config = $config;
 	}
@@ -335,7 +333,7 @@ class Kohana_Solr {
 		Arr::unshift($params, 'wt', Solr::RESPONSE_WRITER);
 
 		// Build request URL
-		$url = $this->config['update_url'].'?'.Solr::build_query($params);
+		$url = $this->config['api_url'].Solr::UPDATE_SERVLET.'?'.Solr::build_query($params);
 
 		// Setup POST data
 		$options = array(
@@ -381,7 +379,7 @@ class Kohana_Solr {
 		) + $params;
 
 		// Build request URL
-		$url = $this->config['search_url'].'?'.Solr::build_query($params);
+		$url = $this->config['api_url'].Solr::SEARCH_SERVLET.'?'.Solr::build_query($params);
 
 		return json_decode(Remote::get($url, $this->curl_options), TRUE);
 	}
