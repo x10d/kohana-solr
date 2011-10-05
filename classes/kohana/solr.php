@@ -65,14 +65,29 @@ class Kohana_Solr {
 	 * Converts array parameters to multiple parameters w/ same name
 	 *
 	 * @static
-	 * @param $params
+	 * @param array $params
 	 * @return mixed
 	 */
-	public static function build_query($params)
+	public static function build_query(array $params)
 	{
+		// TODO filter params that this solr server doesn't handle
+
+		// convert boolean values to strings
+		$params = array_map('Solr::bool', $params);
+
 		// remove brackets from url encoded arrays
 		// and replace all spaces (+) with %20
 		return str_replace('+', '%20', preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($params, NULL, '&')));
+	}
+
+	/**
+	 * @static
+	 * @param mixed $v
+	 * @return array
+	 */
+	public static function bool($v)
+	{
+		return is_bool($v) ? ($v ? 'true' : 'false') : $v;
 	}
 
 	/**
@@ -185,12 +200,12 @@ class Kohana_Solr {
 		);
 
 		$params = array(
-			'overwrite' => $overwrite ? 'true' : 'false',
+			'overwrite' => (bool) $overwrite,
 		);
 
 		if ($commit_within === FALSE || $commit_within === TRUE)
 		{
-			$params['commit'] = $commit_within ? 'true' : 'false';
+			$params['commit'] = (bool) $commit_within;
 		}
 		elseif ((int) $commit_within > 0)
 		{
@@ -211,9 +226,9 @@ class Kohana_Solr {
 	public function commit($soft_commit = FALSE, $wait_searcher = TRUE, $expunge_deletes = FALSE)
 	{
 		$params = array(
-			'softCommit' => $soft_commit ? 'true' : 'false',
-			'waitSearcher' => $wait_searcher ? 'true' : 'false',
-			'expungeDeletes' => $expunge_deletes ? 'true' : 'false',
+			//'softCommit' => (bool) $soft_commit, // Solr 4.0
+			'waitSearcher' => (bool) $wait_searcher,
+			//'expungeDeletes' => (bool) $expunge_deletes,
 		);
 
 		return $this->request(array('commit' => $params));
@@ -242,7 +257,7 @@ class Kohana_Solr {
 
 		if ($commit_within === FALSE || $commit_within === TRUE)
 		{
-			$params['commit'] = $commit_within ? 'true' : 'false';
+			$params['commit'] = (bool) $commit_within;
 		}
 		elseif ((int) $commit_within > 0)
 		{
@@ -268,8 +283,8 @@ class Kohana_Solr {
 	public function optimize($soft_commit = FALSE, $wait_searcher = TRUE, $max_segments = 1)
 	{
 		$params = array(
-			'softCommit' => $soft_commit ? 'true' : 'false',
-			'waitSearcher' => $wait_searcher ? 'true' : 'false',
+			'softCommit' => (bool) $soft_commit,
+			'waitSearcher' => (bool) $wait_searcher,
 			'maxSegments ' => (int) $max_segments,
 		);
 
@@ -309,7 +324,7 @@ class Kohana_Solr {
 		$stream = array();
 		foreach ($ids as $id)
 		{
-			$stream[] = json_encode(array('delete' => array($this->config['unique_key'] => (string) $id)));
+			$stream[] = substr(json_encode(array('delete' => array($this->config['unique_key'] => (string) $id))), 1, -1);
 		}
 
 		return $this->request('{'.implode(',', $stream).'}');
