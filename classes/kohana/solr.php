@@ -7,6 +7,14 @@
  * @copyright    (c) 2011 Demand Media, Inc.
  * @license      MIT
  */
+
+/**
+ * @property string $host
+ * @property int    $port
+ * @property string $path
+ * @property string $unique_key
+ * @property string $api_url
+ */
 class Kohana_Solr {
 
 	const RESPONSE_WRITER = 'json';
@@ -139,6 +147,18 @@ class Kohana_Solr {
 	}
 
 	/**
+	 * utility function to build solr server base url
+	 *
+	 * @static
+	 * @param array $config
+	 * @return string
+	 */
+	public static function api_url(array $config)
+	{
+		return 'http://'.$config['host'].':'.$config['port'].$config['path'];
+	}
+
+	/**
 	 * @var string
 	 */
 	public $instance;
@@ -175,7 +195,7 @@ class Kohana_Solr {
 			'unique_key' => 'id',
 		);
 
-		$config['api_url'] = 'http://'.$config['host'].':'.$config['port'].$config['path'];
+		$config['api_url'] = Solr::api_url($config);
 
 		$this->config = $config;
 	}
@@ -191,7 +211,8 @@ class Kohana_Solr {
 	public function batch_index(array $documents, $overwrite = TRUE, $commit_within = FALSE)
 	{
 		// Filter null values from the documents
-		foreach ($documents as & $document) {
+		foreach ($documents as & $document)
+		{
 			$document = array_filter($document, function($v) {return $v !== NULL; });
 		}
 
@@ -403,7 +424,8 @@ class Kohana_Solr {
 	 * @param $var
 	 * @return mixed
 	 */
-	public function __get($var) {
+	public function __get($var)
+	{
 		return Arr::get($this->config, $var);
 	}
 }
